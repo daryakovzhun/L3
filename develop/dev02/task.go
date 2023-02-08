@@ -1,5 +1,10 @@
 package main
 
+import (
+	"errors"
+	"unicode"
+)
+
 /*
 === Задача на распаковку ===
 
@@ -18,6 +23,39 @@ package main
 Функция должна проходить все тесты. Код должен проходить проверки go vet и golint.
 */
 
-func main() {
+func Unpacking(s string) (string, error) {
+	if len(s) == 0 {
+		return s, nil
+	}
 
+	var res string
+	for i := 0; i < len(s); i++ {
+		if unicode.IsDigit(rune(s[i])) {
+			return "", errors.New("некорректная строка")
+		}
+		if s[i] == '\\' {
+			if i != len(s)-2 && unicode.IsDigit(rune(s[i+2])) {
+				toDuplicate(&s, &res, i+2)
+				i += 2
+			} else {
+				res += string(s[i+1])
+				i++
+			}
+		} else {
+			if i != len(s)-1 && unicode.IsDigit(rune(s[i+1])) {
+				toDuplicate(&s, &res, i+1)
+				i++
+			} else {
+				res += string(s[i])
+			}
+		}
+	}
+	return res, nil
+}
+
+func toDuplicate(s, res *string, k int) {
+	count := int((*s)[k] - '0')
+	for j := 0; j < count; j++ {
+		*res += string((*s)[k-1])
+	}
 }

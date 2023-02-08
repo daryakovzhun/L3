@@ -68,15 +68,22 @@ func main() {
 		fileContents = append(fileContents, strings.Split(buf.Text(), " "))
 	}
 
+	checkInt := true
 	if n {
+		checkInt = false
 		sort.Slice(fileContents, func(i, j int) bool {
-			a, _ := strconv.Atoi(fileContents[i][column-1])
-			b, _ := strconv.Atoi(fileContents[j][column-1])
+			a, err1 := strconv.Atoi(fileContents[i][column-1])
+			b, err2 := strconv.Atoi(fileContents[j][column-1])
+			if err1 != nil || err2 != nil {
+				checkInt = true
+			}
 			return a < b
 		})
-	} else {
+	}
+
+	if checkInt {
 		sort.Slice(fileContents, func(i, j int) bool {
-			return fileContents[i][column-1] < fileContents[j][column-1]
+			return fileContents[i][column-1] <= fileContents[j][column-1]
 		})
 	}
 

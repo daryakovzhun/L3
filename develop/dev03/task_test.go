@@ -14,7 +14,24 @@ var addTests = []addTest{
 	addTest{"-n"},
 	addTest{"-r"},
 	addTest{"-u"},
-	//addTest{"-k"},
+}
+
+func testK(t *testing.T, i *int, file1, file2 *os.File, column string) {
+	t.Log("TEST", *i, " -- sort", "k", "file.txt")
+	a, _ := exec.Command("./task", "-k", column, "file.txt").CombinedOutput()
+	file1.WriteString(string(a))
+
+	b, _ := exec.Command("sort", "-k", column, "file.txt").CombinedOutput()
+	file2.WriteString(string(b))
+
+	res, err := exec.Command("diff", "a", "b").CombinedOutput()
+	if len(res) != 0 {
+		t.Errorf("Error %s", string(res))
+		t.Errorf(err.Error())
+	} else {
+		t.Log("OK")
+	}
+	*i += 1
 }
 
 func TestSort(t *testing.T) {
@@ -25,8 +42,10 @@ func TestSort(t *testing.T) {
 	file2, _ := os.Create("b")
 	defer file2.Close()
 
-	for i, test := range addTests {
-		t.Log("TEST", i+1, " -- sort", test.arg1, "file.txt")
+	i := 1
+	for _, test := range addTests {
+
+		t.Log("TEST", i, " -- sort", test.arg1, "file.txt")
 		a, _ := exec.Command("./task", test.arg1, "file.txt").CombinedOutput()
 		file1.WriteString(string(a))
 
@@ -37,9 +56,14 @@ func TestSort(t *testing.T) {
 		if len(res) != 0 {
 			t.Errorf("Error %s", string(res))
 			t.Errorf(err.Error())
+		} else {
+			t.Log("OK")
 		}
-		//fmt.Print(string(res))
-
+		i++
 	}
+
+	testK(t, &i, file1, file2, "1")
+	testK(t, &i, file1, file2, "2")
+	testK(t, &i, file1, file2, "3")
 
 }

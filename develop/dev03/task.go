@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 /*
@@ -64,26 +65,44 @@ func main() {
 	defer out.Flush()
 
 	fileContents := [][]string{}
+	min := 1000
 	for buf.Scan() {
-		fileContents = append(fileContents, strings.Split(buf.Text(), " "))
+		line := strings.Split(buf.Text(), " ")
+		fileContents = append(fileContents, line)
+		if len(line) < min {
+			min = len(line)
+		}
+	}
+
+	if column > min {
+		column = 1
 	}
 
 	checkInt := true
 	if n {
 		checkInt = false
 		sort.Slice(fileContents, func(i, j int) bool {
-			a, err1 := strconv.Atoi(fileContents[i][column-1])
-			b, err2 := strconv.Atoi(fileContents[j][column-1])
-			if err1 != nil || err2 != nil {
-				checkInt = true
-			}
+			a, _ := strconv.Atoi(fileContents[i][column-1])
+			b, _ := strconv.Atoi(fileContents[j][column-1])
 			return a < b
 		})
 	}
 
 	if checkInt {
 		sort.Slice(fileContents, func(i, j int) bool {
-			return fileContents[i][column-1] <= fileContents[j][column-1]
+			leni := len(fileContents[i][column-1])
+			lenj := len(fileContents[j][column-1])
+			if leni < lenj && fileContents[i][column-1][:leni] == fileContents[j][column-1][:leni] &&
+				unicode.IsDigit(rune(fileContents[j][column-1][leni])) {
+				return false
+			}
+
+			if leni > lenj && fileContents[i][column-1][:lenj] == fileContents[j][column-1][:lenj] &&
+				unicode.IsDigit(rune(fileContents[i][column-1][lenj])) {
+				return true
+			}
+
+			return fileContents[i][column-1] < fileContents[j][column-1]
 		})
 	}
 

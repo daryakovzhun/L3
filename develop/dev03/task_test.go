@@ -31,10 +31,12 @@ func testK(t *testing.T, i *int, file1, file2 *os.File, column string) {
 	} else {
 		t.Log("OK")
 	}
-	*i += 1
+	*i++
 }
 
 func TestSort(t *testing.T) {
+
+	//_ = exec.Command("go build task.go")
 
 	file1, _ := os.Create("a")
 	defer file1.Close()

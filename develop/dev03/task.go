@@ -37,6 +37,7 @@ import (
 Программа должна проходить все тесты. Код должен проходить проверки go vet и golint.
 */
 
+// Linux
 func main() {
 	var column int
 	var n, r, u bool
@@ -78,17 +79,13 @@ func main() {
 		column = 1
 	}
 
-	checkInt := true
 	if n {
-		checkInt = false
 		sort.Slice(fileContents, func(i, j int) bool {
 			a, _ := strconv.Atoi(fileContents[i][column-1])
 			b, _ := strconv.Atoi(fileContents[j][column-1])
 			return a < b
 		})
-	}
-
-	if checkInt {
+	} else {
 		sort.Slice(fileContents, func(i, j int) bool {
 			leni := len(fileContents[i][column-1])
 			lenj := len(fileContents[j][column-1])
@@ -107,19 +104,30 @@ func main() {
 	}
 
 	if u {
-		withoutDuplicate := [][]string{}
-		for i := 0; i < len(fileContents); i++ {
-			if i != len(fileContents)-1 &&
-				strings.Join(fileContents[i], " ") == strings.Join(fileContents[i+1], " ") {
-				continue
-			}
-			withoutDuplicate = append(withoutDuplicate, fileContents[i])
-		}
-		fileContents = nil
-		fileContents = withoutDuplicate
+		fileContents = deleateDuplicate(fileContents)
 	}
 
-	if r {
+	printSortDate(&r, fileContents, out)
+
+	if err := buf.Err(); err != nil {
+		fmt.Fprintln(os.Stderr, "error reading: err:", err)
+	}
+}
+
+func deleateDuplicate(fileContents [][]string) [][]string {
+	withoutDuplicate := [][]string{}
+	for i := 0; i < len(fileContents); i++ {
+		if i != len(fileContents)-1 &&
+			strings.Join(fileContents[i], " ") == strings.Join(fileContents[i+1], " ") {
+			continue
+		}
+		withoutDuplicate = append(withoutDuplicate, fileContents[i])
+	}
+	return withoutDuplicate
+}
+
+func printSortDate(r *bool, fileContents [][]string, out *bufio.Writer) {
+	if *r {
 		for i := len(fileContents) - 1; i >= 0; i-- {
 			fmt.Fprintln(out, strings.Join(fileContents[i], " "))
 		}
@@ -127,9 +135,5 @@ func main() {
 		for i := 0; i < len(fileContents); i++ {
 			fmt.Fprintln(out, strings.Join(fileContents[i], " "))
 		}
-	}
-
-	if err := buf.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "error reading: err:", err)
 	}
 }

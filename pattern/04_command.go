@@ -74,6 +74,7 @@ func (s *Switch) flipDown() {
 	s.flipDownCommand.execute()
 }
 
+// Пример использования паттерна
 func main() {
 	l := NewLight()
 	switchUp := NewTurnOnLightCommand(*l)

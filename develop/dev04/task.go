@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 )
@@ -55,8 +54,8 @@ func FindAnagrams(words *[]string) *map[string][]string {
 	return &res
 }
 
-func main() {
-	x := []string{"листок", "пятак", "пятка", "столик", "слиток", "тяпка"}
-	y := FindAnagrams(&x)
-	fmt.Println(*y)
-}
+//func main() {
+//	x := []string{"листок", "пятак", "пятка", "столик", "слиток", "тяпка"}
+//	y := FindAnagrams(&x)
+//	fmt.Println(*y)
+//}

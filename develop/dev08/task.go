@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -40,11 +41,26 @@ func main() {
 }
 
 func command(cmd string) error {
-	cmdArr := strings.Split(cmd, " ")
-	switch cmdArr[0] {
+	cmdArg := strings.Split(cmd, " ")
+	switch cmdArg[0] {
 	case "cd":
+		_, err := exec.Command("bash", "-c", "cd", cmdArg[1]).Output()
+		if err != nil {
+			fmt.Println(err)
+			return err
+			//} else {
+			//	//fmt.Print(out)
+			//	fmt.Printf("%s\n", out)
+		}
 	case "echo":
 	case "pwd":
+		out, err := exec.Command("bash", "-c", "pwd").Output()
+		if err != nil {
+			fmt.Println(err)
+			return err
+		} else {
+			fmt.Printf("%s", out)
+		}
 	case "kill":
 	case "ps":
 	case "quit":

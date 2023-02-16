@@ -46,39 +46,35 @@ func command(cmd string) error {
 	switch cmdArg[0] {
 	case "cd":
 		_, err := exec.Command("bash", "-c", "cd", cmdArg[1]).Output()
-		//_, err := exec.Command("cmd", "/C", "cd", cmdArg[1]).Output()
 		if err != nil {
 			return err
 		}
 	case "echo":
-		out, err := exec.Command("bash", "-c", "echo", strings.Join(cmdArg[1:], " ")).Output()
+		out, err := exec.Command("echo", strings.Join(cmdArg[1:], " ")).Output()
 		if err != nil {
 			return err
-		} else {
-			fmt.Printf("%s\n", out)
 		}
+
+		fmt.Printf("%s", out)
 	case "pwd":
 		out, err := exec.Command("bash", "-c", "pwd").Output()
-		//out, err := exec.Command("cmd", "/C", "echo", "%cd%").Output()
 		if err != nil {
 			return err
-		} else {
-			fmt.Printf("%s", out)
 		}
+
+		fmt.Printf("%s", out)
 	case "kill":
-		out, err := exec.Command("bash", "-c", "kill", cmdArg[1]).Output()
+		out, err := exec.Command("kill", cmdArg[1]).Output()
 		if err != nil {
 			return err
-		} else {
-			fmt.Printf("%s\n", out)
 		}
+		fmt.Printf("%s\n", out)
 	case "ps":
 		out, err := exec.Command("bash", "-c", "ps").Output()
 		if err != nil {
 			return err
-		} else {
-			fmt.Printf("%s\n", out)
 		}
+		fmt.Printf("%s\n", out)
 	case "quit":
 		os.Exit(0)
 	}

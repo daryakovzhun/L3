@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"io"
+	"fmt"
+	"github.com/PuerkitoBio/goquery"
+	"github.com/sjatsh/grab"
 	"log"
 	"net/http"
-	"os"
 )
 
 /*
@@ -22,24 +23,46 @@ func main() {
 
 	url := flag.Arg(0)
 
-	filename := "download/" + "1.txt"
+	dir := "download/"
 	if !*m {
-		resp, err := http.Get(url)
+		resp, err := grab.Get(dir, url)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatal(err)
 		}
-		defer resp.Body.Close()
+		fmt.Println("Download saved to", resp.Filename)
+	} else {
+		links := linkParser(url)
 
-		file, err := os.Create(filename)
-		if err != nil {
-			log.Fatalln(err)
+		for _, val := range links {
+			resp, err := grab.Get(dir, url+val)
+			if err != nil {
+				fmt.Println("Error download page")
+			} else {
+				fmt.Println("Download saved to", resp.Filename)
+			}
 		}
-		defer file.Close()
 
-		_, err = io.Copy(file, resp.Body)
-		if err != nil {
-			log.Fatalln(err)
-		}
 	}
 
+}
+
+func linkParser(url string) []string {
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var links []string
+
+	doc.Find("body a").Each(func(index int, item *goquery.Selection) {
+		linkTag := item
+		link, _ := linkTag.Attr("href")
+		links = append(links, link)
+	})
+	return links
 }

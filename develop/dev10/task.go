@@ -1,5 +1,13 @@
 package main
 
+import (
+	"flag"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+)
+
 /*
 === Утилита telnet ===
 
@@ -16,5 +24,34 @@ go-telnet --timeout=10s host port go-telnet mysite.ru 8080 go-telnet --timeout=3
 */
 
 func main() {
+	timeout := flag.String("timeout", "10s", "timeout")
+	flag.Parse()
 
+	if len(flag.Args()) == 0 {
+		fmt.Println("Not enough arguments")
+		return
+	}
+
+	exitCh := make(chan os.Signal, 1)
+	signal.Notify(exitCh, syscall.SIGQUIT, syscall.SIGTERM)
+	go Exit(exitCh)
+
+	fmt.Println(*timeout)
+
+	for {
+
+	}
+
+}
+
+func Exit(exitCh chan os.Signal) {
+	for {
+		select {
+		case <-exitCh:
+			fmt.Println("Press Ctrl+D\nExit")
+			os.Exit(0)
+		default:
+			fmt.Println("Hello")
+		}
+	}
 }
